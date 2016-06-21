@@ -50,7 +50,99 @@
         </div>
         <pre class="debug"></pre>
         <script>
-            // your code goes here ...
+            var ageInput = null,
+                relInput = null,
+                smokerInput = null,
+                memberListEl = null,
+                members = [];
+
+            window.onload = initialize;
+
+            function initialize() {
+              var formEl = document.getElementsByTagName('form')[0];
+              ageInput = formEl.querySelector('input[name="age"]');
+              relInput = formEl.querySelector('select[name="rel"]');
+              smokerInput = formEl.querySelector('input[name="smoker"]');
+              memberListEl = document.getElementsByClassName('household')[0];
+
+              document.getElementsByClassName('add')[0].onclick = addMember;
+              formEl.querySelector('button[type="submit"]').onclick = submitForm;
+            }
+
+            function addMember(e) {
+              e.preventDefault();
+              if (!formIsValid()) return;
+
+              var member = createMember();
+              members.push(member);
+              addMemberToDOM(member, members.length - 1);
+              clearForm();
+            }
+
+            function submitForm(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              document.getElementsByTagName('pre')[0].innerText = JSON.stringify({household: members})
+            }
+
+            function formIsValid() {
+              clearErrors();
+
+              if (!/^[0-9]*[1-9][0-9]*$/.test(ageInput.value))
+                addError(ageInput, 'Age is required and must be a number greater than 0.');
+
+              if (relInput.value === "") 
+                addError(relInput, 'Relationship is required');
+              
+              return /^[0-9]*[1-9][0-9]*$/.test(ageInput.value) && relInput.value !== "";
+            }
+
+            function clearErrors() {
+              ageInput.style ="";
+              relInput.style = "";
+              if (ageInput.nextSibling) ageInput.nextSibling.remove();
+              if (relInput.nextSibling) relInput.nextSibling.remove();
+            }
+
+            function addError(el, msg) {
+              var msgEl = document.createElement('span');
+              msgEl.style.color = "red";
+              msgEl.innerText = msg;
+              el.style.border = "1px solid red";
+              el.parentNode.appendChild(msgEl);
+            }
+
+            function createMember() {
+              return { 
+                age: parseInt(ageInput.value),
+                relationship: relInput.value,
+                isSmoker: smokerInput.checked
+              };
+            }
+
+            function addMemberToDOM(member, idx) {
+              var memberEl = document.createElement('li');
+              memberEl.innerHTML = member.relationship + ' - ' + member.age + ' ' +
+                '<span><a href="javascript:removeMember(' + idx + ')">Remove</a></span>';
+
+              memberListEl.appendChild(memberEl);
+            }
+
+            function clearForm() {
+              ageInput.value = "";
+              relInput.value = "";
+              smokerInput.checked = false;
+            }
+
+            function removeMember(index) {
+              memberListEl.childNodes[index].remove();
+              members.splice(index, 1);
+
+              for (i = index; i < memberListEl.childNodes.length; i++) {
+                var newHandler = "javascript:removeMember('" + i + "')";
+                memberListEl.childNodes[i].querySelector('a').href = newHandler;
+              }
+            }
         </script>
     </body>
 </html>
