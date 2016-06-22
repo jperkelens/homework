@@ -9,6 +9,8 @@ import java.math.BigInteger;
 
 public class ParseTransactionLogs {
   public static final BigInteger USER_OF_INTEREST = new BigInteger("2456938384156277127");
+
+  //Enum for transaction types
   public enum Type { 
     DEBIT(0), CREDIT(1), START_AUTOPAY(2), END_AUTOPAY(3);
     private final int value;
@@ -22,6 +24,8 @@ public class ParseTransactionLogs {
     }
   };
 
+  // Main method, push file into a ByteBuffer, 
+  // parse the header then parse the transactions
   public static void main(String[] args) {
     try {
       Path path = Paths.get("txnlog.dat");
@@ -38,6 +42,7 @@ public class ParseTransactionLogs {
     }
   }
 
+  // Helper method to retrieve an unsigned int and store it in a long
   public static long getUInt(ByteBuffer buf) {
     byte[] longArr = new byte[8];
     byte[] significantArr = new byte[4];
@@ -49,6 +54,8 @@ public class ParseTransactionLogs {
     return ByteBuffer.wrap(longArr).getLong();
   }
 
+  // Count all transaction types, sum credits and debits and 
+  // calculate balance of the user of interest
   public static void printStats(ArrayList<Transaction> transactions) {
     int[] typeCounts = new int[4];
     double[] totalBalances = new double[2];
@@ -56,8 +63,10 @@ public class ParseTransactionLogs {
 
     for (Transaction currTransaction : transactions) {
       typeCounts[currTransaction.type.getValue() ]++;
+
       if (currTransaction.hasAmount())
         totalBalances[currTransaction.type.getValue()] += currTransaction.amount;
+
       if (currTransaction.userId.equals(USER_OF_INTEREST))
         userBalance += currTransaction.type == Type.DEBIT ?
           -currTransaction.amount 
@@ -71,6 +80,8 @@ public class ParseTransactionLogs {
     System.out.println("Total balance for user " + USER_OF_INTEREST +  ": " + userBalance);
   }
 
+  // Class that parses and validates the log header
+  // Throws an exception if it does not start with the magic string
   static class LogInfo {
     public byte version;
     public long transactionNumber;
@@ -92,6 +103,7 @@ public class ParseTransactionLogs {
     }
   }
 
+  // Class that parses a transaction
   static class Transaction {
     public Type type;
     public long timestamp;
@@ -117,5 +129,4 @@ public class ParseTransactionLogs {
       return type == Type.DEBIT || type == Type.CREDIT;
     }
   }
-
 }
