@@ -1,0 +1,37 @@
+Instructions for:
+
+Household builder
+-------------------
+Nothing special. Just load the page and interact with it.
+
+Go Middleware
+--------------------
+Same. Just run the file and submit your HTTP requests.
+
+Protocol
+--------------------
+Written in Java 8. 
+Download and install the [SDK](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+In the proto folder, compile the code:
+```
+  javac ParseTransactionLogs.java
+```
+
+Then run it:
+```
+  java ParseTransactionLogs
+```
+
+SLSCP
+------------
+Written in node.js
+Download and install [node](https://nodejs.org/dist/v4.4.5/node-v4.4.5.pkg)
+In the slscp folder, install the dependenciese:
+```
+  npm install
+```
+
+Then run it:
+```
+  node print_rates.js
+```
